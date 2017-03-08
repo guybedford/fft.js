@@ -1,13 +1,17 @@
-'use strict';
+import FFT from '../';
+import FFT_WASM from '../native/fft.js';
+import benchmark from 'benchmark';
+import jensnockert from 'fft';
+import dspjs from 'dsp.js';
+import drom from 'fourier';
+import fourierTransform from 'fourier-transform';
 
-const FFT = require('../');
 const external = {
-  jensnockert: require('fft'),
-  dspjs: require('dsp.js'),
-  drom: require('fourier'),
-  fourierTransform: require('fourier-transform')
+  jensnockert,
+  dspjs,
+  drom,
+  fourierTransform
 };
-const benchmark = require('benchmark');
 
 function regexFilter(value) {
   if (value !== undefined && value.length !== 0)
@@ -42,6 +46,10 @@ function construct(size) {
     new FFT(size);
   });
 
+  suite.add('fft.js wasm', () => {
+    new FFT_WASM(size);
+  });
+
   return suite;
 }
 
@@ -54,6 +62,20 @@ function addSelf(suite, size) {
   addFiltered(suite, 'fft.js', () => {
     f.transform(out, data);
   });
+}
+
+function addSelfNative(suite, size) {
+  const f = new FFT_WASM(size);
+  const input = createInput(f.size);
+  const data = f.toComplexArray(input);
+  const out = f.createComplexArray();
+
+  suite.add('fft.js wasm', () => {
+    f.transform(out, data);
+  });
+
+  f.disposeBuffer(data);
+  f.disposeBuffer(out);
 }
 
 function addJensNockert(suite, size) {
@@ -99,6 +121,7 @@ function transform(size) {
   const suite = new benchmark.Suite();
 
   addSelf(suite, size);
+  addSelfNative(suite, size);
   addJensNockert(suite, size);
   addDSPJS(suite, size);
   addDrom(suite, size);

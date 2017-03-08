@@ -1,8 +1,6 @@
-'use strict';
-
-const assert = require('assert');
-const external = require('fft');
-const FFT = require('../');
+import assert from 'assert';
+import external from 'fft';
+import FFT from '../native/fft.js';
 
 function fixRoundEqual(actual, expected) {
   function fixRound(r) {
@@ -49,22 +47,32 @@ describe('FFT.js', () => {
   it('should create complex array', () => {
     const f = new FFT(4);
 
-    assert.strictEqual(f.createComplexArray().length, 8);
-    assert.strictEqual(f.createComplexArray()[0], 0);
+    const ca = f.createComplexArray();
+
+    assert.strictEqual(ca.length, 8);
+    assert.strictEqual(ca[0], 0);
+
+    f.disposeBuffer(ca);
   });
 
   it('should convert to complex array', () => {
     const f = new FFT(4);
 
-    assert.deepEqual(f.toComplexArray([ 1, 2, 3, 4 ]),
-                     [ 1, 0, 2, 0, 3, 0, 4, 0 ]);
+    const ca = f.toComplexArray([ 1, 2, 3, 4 ]);
+    assert.deepEqual(ca, [ 1, 0, 2, 0, 3, 0, 4, 0 ]);
+
+    f.disposeBuffer(ca);
   });
 
   it('should convert from complex array', () => {
     const f = new FFT(4);
 
-    assert.deepEqual(f.fromComplexArray(f.toComplexArray([ 1, 2, 3, 4 ])),
+    const ca = f.toComplexArray([ 1, 2, 3, 4 ]);
+
+    assert.deepEqual(f.fromComplexArray(ca),
                      [ 1, 2, 3, 4 ]);
+
+    f.disposeBuffer(ca);
   });
 
   it('should throw on invalid transform inputs', () => {
@@ -74,6 +82,8 @@ describe('FFT.js', () => {
     assert.throws(() => {
       f.transform(output, output);
     }, /must be different/);
+
+    f.disposeBuffer(output);
   });
 
   it('should transform trivial radix-2 case', () => {
@@ -83,15 +93,20 @@ describe('FFT.js', () => {
     let data = f.toComplexArray([ 0.5, -0.5 ]);
     f.transform(out, data);
     assert.deepEqual(out, [ 0, 0, 1, 0 ]);
+    f.disposeBuffer(data);
 
     data = f.toComplexArray([ 0.5, 0.5 ]);
     f.transform(out, data);
     assert.deepEqual(out, [ 1, 0, 0, 0 ]);
+    f.disposeBuffer(data);
 
     // Linear combination
     data = f.toComplexArray([ 1, 0 ]);
     f.transform(out, data);
     assert.deepEqual(out, [ 1, 0, 1, 0 ]);
+    f.disposeBuffer(data);
+
+    f.disposeBuffer(out);
   });
 
   it('should transform trivial case', () => {
@@ -101,10 +116,14 @@ describe('FFT.js', () => {
     let data = f.toComplexArray([ 1, 0.707106, 0, -0.707106 ]);
     f.transform(out, data);
     fixRoundEqual(out, [ 1, 0, 1, -1.414, 1, 0, 1, 1.414 ]);
+    f.disposeBuffer(data);
 
     data = f.toComplexArray([ 1, 0, -1, 0 ]);
     f.transform(out, data);
     assert.deepEqual(out, [ 0, 0, 2, 0, 0, 0, 2, 0 ]);
+    f.disposeBuffer(data);
+
+    f.disposeBuffer(out);
   });
 
   it('should inverse-transform', () => {
@@ -116,6 +135,9 @@ describe('FFT.js', () => {
     fixRoundEqual(out, [ 1, 0, 1, -1.414, 1, 0, 1, 1.414 ]);
     f.inverseTransform(data, out);
     assert.deepEqual(f.fromComplexArray(data), [ 1, 0.707106, 0, -0.707106 ]);
+
+    f.disposeBuffer(data);
+    f.disposeBuffer(out);
   });
 
   it('should transform big recursive case', () => {
@@ -130,6 +152,9 @@ describe('FFT.js', () => {
     f.transform(out, data);
     f.inverseTransform(data, out);
     fixRoundEqual(f.fromComplexArray(data), input);
+
+    f.disposeBuffer(out);
+    f.disposeBuffer(data);
   });
 
   it('should transform big recursive radix-2 case', () => {
@@ -144,23 +169,30 @@ describe('FFT.js', () => {
     f.transform(out, data);
     f.inverseTransform(data, out);
     fixRoundEqual(f.fromComplexArray(data), input);
+
+    f.disposeBuffer(out);
+    f.disposeBuffer(data);
   });
 
   function externalLib(generator, size) {
     it('should verify against other library', () => {
       const ex = new external.complex(size, false);
+      const f = new FFT(size);
 
-      const input = new Float64Array(size * 2);
+      const input = f.createComplexArray();
       for (let i = 0; i < input.length; i += 2)
         input[i] = generator(i >>> 1);
       const expected = new Float64Array(size * 2);
 
       ex.simple(expected, input, 'complex');
 
-      const self = new FFT(size);
-      const out = self.createComplexArray();
-      self.transform(out, input);
+      const out = f.createComplexArray();
+      f.transform(out, input);
       fixRoundEqual(out, expected);
+
+      f.disposeBuffer(out);
+      f.disposeBuffer(input);
+      f.dispose();
     });
   }
 
@@ -178,11 +210,15 @@ describe('FFT.js', () => {
 
       complex.transform(expected, input, 'complex');
 
-      const self = new FFT(size);
-      const out = self.createComplexArray();
-      self.realTransform(out, realInput);
-      self.completeSpectrum(out);
+      const f = new FFT(size);
+      const out = f.createComplexArray();
+      f.realTransform(out, realInput);
+      f.completeSpectrum(out);
       fixRoundEqual(out, expected);
+
+      f.disposeBuffer(out);
+      f.disposeBuffer(input);
+      f.dispose();
     });
   }
 
@@ -200,11 +236,15 @@ describe('FFT.js', () => {
 
       ex.simple(expected, input, 'complex');
 
-      const self = new FFT(size);
-      const out = self.createComplexArray();
-      self.realTransform(out, realInput);
-      self.completeSpectrum(out);
+      const f = new FFT(size);
+      const out = f.createComplexArray();
+      f.realTransform(out, realInput);
+      f.completeSpectrum(out);
       fixRoundEqual(out, expected);
+
+      f.disposeBuffer(out);
+      f.disposeBuffer(input);
+      f.dispose();
     });
   }
 
