@@ -3,9 +3,9 @@
   (export "allocateBuffer" (func $allocateBuffer)) ;; size -> address in bytes
   (export "freeBuffer" (func $freeBuffer)) ;; address in bytes
 
-  (export "transform4" (func $transform4))
-  (export "singleTransform2" (func $singleTransform2))
-  (export "singleTransform4" (func $singleTransform4))
+  (export "transform4" (func $_Z10transform4PdS_iiiPiS_))
+  (export "singleTransform2" (func $_Z16singleTransform2PdS_iii))
+  (export "singleTransform4" (func $_Z16singleTransform4PdS_iiii))
 
   (memory (export "memory") 32)
 
@@ -199,463 +199,964 @@
     )
   )
 
-  (func $transform4
-    (param $outAddr i32)
-    (param $dataAddr i32)
-    (param $inv f64)
-    (param $size i32)
-    (param $width i32)
-    (param $bitrevAddr i32)
-    (param $tableAddr i32)
-
-    (result f64)
-
-    (local $len i32)
-    (local $step i32)
-    (local $outOff i32)
-    (local $off i32)
-    (local $i i32)
-    (local $limit i32)
-    (local $k i32)
-    (local $curAddr i32)
-    (local $loopCnt i32)
-    (local $quarterLen i32)
-
-    (local $Ar f64)
-    (local $Ai f64)
-    (local $Br f64)
-    (local $Bi f64)
-    (local $Cr f64)
-    (local $Ci f64)
-    (local $Dr f64)
-    (local $Di f64)
-
-    (local $tableBr f64)
-    (local $tableBi f64)
-    (local $tableCr f64)
-    (local $tableCi f64)
-    (local $tableDr f64)
-    (local $tableDi f64)
-
-    (local $MBr f64)
-    (local $MBi f64)
-    (local $MCr f64)
-    (local $MCi f64)
-    (local $MDr f64)
-    (local $MDi f64)
-
-    (local $T0r f64)
-    (local $T0i f64)
-    (local $T1r f64)
-    (local $T1i f64)
-    (local $T2r f64)
-    (local $T2i f64)
-    (local $T3r f64)
-    (local $T3i f64)
-
-    (set_local $step (i32.shl (i32.const 1) (get_local $width)))
-    (set_local $len
-      (i32.shl
-        (i32.div_u (get_local $size) (get_local $step))
-        (i32.const 4)
+  (func $_Z10transform4PdS_iiiPiS_ (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32) (param $5 i32) (param $6 i32)
+    (local $7 f64)
+    (local $8 i32)
+    (local $9 i32)
+    (local $10 i32)
+    (local $11 i32)
+    (local $12 i32)
+    (local $13 i32)
+    (local $14 i32)
+    (local $15 i32)
+    (local $16 i32)
+    (local $17 i32)
+    (local $18 i32)
+    (local $19 f64)
+    (local $20 i32)
+    (local $21 f64)
+    (local $22 f64)
+    (local $23 i32)
+    (local $24 f64)
+    (local $25 f64)
+    (local $26 f64)
+    (local $27 i32)
+    (local $28 f64)
+    (local $29 f64)
+    (local $30 i32)
+    (local $31 f64)
+    (local $32 f64)
+    (local $33 f64)
+    (local $34 f64)
+    (local $35 f64)
+    (local $36 f64)
+    (local $37 i32)
+    (local $38 f64)
+    (local $39 f64)
+    (local $40 f64)
+    (local $41 f64)
+    (local $42 f64)
+    (local $43 i32)
+    (local $44 i32)
+    (local $45 i32)
+    (local $46 i32)
+    (local $47 i32)
+    (block $label$0
+      (block $label$1
+        (br_if $label$1
+          (i32.ne
+            (tee_local $27
+              (i32.shl
+                (i32.div_s
+                  (get_local $3)
+                  (tee_local $46
+                    (i32.shl
+                      (i32.const 1)
+                      (get_local $4)
+                    )
+                  )
+                )
+                (i32.const 1)
+              )
+            )
+            (i32.const 4)
+          )
+        )
+        (br_if $label$0
+          (i32.lt_s
+            (get_local $3)
+            (i32.const 1)
+          )
+        )
+        (set_local $4
+          (i32.const 0)
+        )
+        (loop $label$2
+          (call $_Z16singleTransform2PdS_iii
+            (get_local $0)
+            (get_local $1)
+            (get_local $4)
+            (i32.load
+              (i32.add
+                (get_local $5)
+                (get_local $4)
+              )
+            )
+            (get_local $46)
+          )
+          (br_if $label$2
+            (i32.lt_s
+              (tee_local $4
+                (i32.add
+                  (get_local $4)
+                  (i32.const 4)
+                )
+              )
+              (get_local $3)
+            )
+          )
+          (br $label$0)
+        )
+      )
+      (br_if $label$0
+        (i32.lt_s
+          (get_local $3)
+          (i32.const 1)
+        )
+      )
+      (set_local $4
+        (i32.const 0)
+      )
+      (loop $label$3
+        (call $_Z16singleTransform4PdS_iiii
+          (get_local $0)
+          (get_local $1)
+          (get_local $2)
+          (get_local $4)
+          (i32.load
+            (get_local $5)
+          )
+          (get_local $46)
+        )
+        (set_local $5
+          (i32.add
+            (get_local $5)
+            (i32.const 4)
+          )
+        )
+        (br_if $label$3
+          (i32.lt_s
+            (tee_local $4
+              (i32.add
+                (get_local $4)
+                (get_local $27)
+              )
+            )
+            (get_local $3)
+          )
+        )
       )
     )
-
-    (if (i32.eq (get_local $len) (i32.const 32))
-    (then
-      (loop $transform2
-        (set_local $off
-          (i32.load (i32.add (get_local $bitrevAddr) (get_local $i)))
+    (block $label$4
+      (br_if $label$4
+        (i32.lt_s
+          (tee_local $43
+            (i32.shr_s
+              (get_local $46)
+              (i32.const 2)
+            )
+          )
+          (i32.const 2)
         )
-
-        (call $singleTransform2
-          (i32.add (get_local $outAddr) (get_local $outOff))
-          (i32.add (get_local $dataAddr) (get_local $off))
-          (get_local $step)
+      )
+      (set_local $7
+        (f64.convert_s/i32
+          (get_local $2)
         )
-
-        ;; i++
-        (set_local $i (i32.add
-          (get_local $i) (i32.const 4)
-        ))
-
-        (br_if $transform2 (i32.lt_u (tee_local $outOff (i32.add
-          (get_local $outOff) (get_local $len)
-        )) (get_local $size)))
+      )
+      (loop $label$5
+        (set_local $5
+          (i32.div_s
+            (get_local $3)
+            (get_local $43)
+          )
+        )
+        (block $label$6
+          (br_if $label$6
+            (i32.lt_s
+              (get_local $3)
+              (i32.const 1)
+            )
+          )
+          (set_local $16
+            (i32.shl
+              (get_local $43)
+              (i32.const 3)
+            )
+          )
+          (set_local $15
+            (i32.shl
+              (get_local $43)
+              (i32.const 4)
+            )
+          )
+          (set_local $14
+            (i32.shl
+              (tee_local $9
+                (i32.shr_s
+                  (tee_local $8
+                    (i32.shl
+                      (get_local $5)
+                      (i32.const 1)
+                    )
+                  )
+                  (i32.const 2)
+                )
+              )
+              (i32.const 3)
+            )
+          )
+          (set_local $13
+            (i32.shl
+              (get_local $9)
+              (i32.const 4)
+            )
+          )
+          (set_local $12
+            (i32.mul
+              (get_local $43)
+              (i32.const 24)
+            )
+          )
+          (set_local $11
+            (i32.mul
+              (get_local $9)
+              (i32.const 24)
+            )
+          )
+          (set_local $10
+            (i32.shl
+              (get_local $5)
+              (i32.const 4)
+            )
+          )
+          (set_local $45
+            (i32.const 0)
+          )
+          (set_local $44
+            (get_local $0)
+          )
+          (loop $label$7
+            (block $label$8
+              (br_if $label$8
+                (i32.lt_s
+                  (get_local $9)
+                  (i32.const 1)
+                )
+              )
+              (set_local $17
+                (i32.add
+                  (get_local $45)
+                  (get_local $9)
+                )
+              )
+              (set_local $4
+                (i32.const 0)
+              )
+              (set_local $46
+                (i32.const 0)
+              )
+              (set_local $1
+                (i32.const 0)
+              )
+              (set_local $5
+                (get_local $44)
+              )
+              (set_local $47
+                (get_local $45)
+              )
+              (loop $label$9
+                (f64.store
+                  (get_local $5)
+                  (f64.add
+                    (tee_local $41
+                      (f64.add
+                        (tee_local $40
+                          (f64.load
+                            (get_local $5)
+                          )
+                        )
+                        (tee_local $39
+                          (f64.sub
+                            (f64.mul
+                              (tee_local $35
+                                (f64.load
+                                  (tee_local $2
+                                    (i32.add
+                                      (get_local $5)
+                                      (get_local $13)
+                                    )
+                                  )
+                                )
+                              )
+                              (tee_local $34
+                                (f64.load
+                                  (tee_local $27
+                                    (i32.add
+                                      (get_local $6)
+                                      (get_local $46)
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                            (f64.mul
+                              (tee_local $38
+                                (f64.load
+                                  (tee_local $37
+                                    (i32.add
+                                      (get_local $2)
+                                      (i32.const 8)
+                                    )
+                                  )
+                                )
+                              )
+                              (tee_local $36
+                                (f64.mul
+                                  (f64.load
+                                    (i32.add
+                                      (get_local $27)
+                                      (i32.const 8)
+                                    )
+                                  )
+                                  (get_local $7)
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                    (tee_local $33
+                      (f64.add
+                        (tee_local $32
+                          (f64.sub
+                            (f64.mul
+                              (tee_local $28
+                                (f64.load
+                                  (tee_local $27
+                                    (i32.add
+                                      (get_local $5)
+                                      (get_local $14)
+                                    )
+                                  )
+                                )
+                              )
+                              (tee_local $26
+                                (f64.load
+                                  (tee_local $20
+                                    (i32.add
+                                      (get_local $6)
+                                      (get_local $4)
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                            (f64.mul
+                              (tee_local $31
+                                (f64.load
+                                  (tee_local $30
+                                    (i32.add
+                                      (get_local $27)
+                                      (i32.const 8)
+                                    )
+                                  )
+                                )
+                              )
+                              (tee_local $29
+                                (f64.mul
+                                  (f64.load
+                                    (i32.add
+                                      (get_local $20)
+                                      (i32.const 8)
+                                    )
+                                  )
+                                  (get_local $7)
+                                )
+                              )
+                            )
+                          )
+                        )
+                        (tee_local $25
+                          (f64.sub
+                            (f64.mul
+                              (tee_local $21
+                                (f64.load
+                                  (tee_local $20
+                                    (i32.add
+                                      (get_local $5)
+                                      (get_local $11)
+                                    )
+                                  )
+                                )
+                              )
+                              (tee_local $19
+                                (f64.load
+                                  (tee_local $18
+                                    (i32.add
+                                      (get_local $6)
+                                      (get_local $1)
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                            (f64.mul
+                              (tee_local $24
+                                (f64.load
+                                  (tee_local $23
+                                    (i32.add
+                                      (get_local $20)
+                                      (i32.const 8)
+                                    )
+                                  )
+                                )
+                              )
+                              (tee_local $22
+                                (f64.mul
+                                  (f64.load
+                                    (i32.add
+                                      (get_local $18)
+                                      (i32.const 8)
+                                    )
+                                  )
+                                  (get_local $7)
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (f64.store
+                  (tee_local $18
+                    (i32.add
+                      (get_local $5)
+                      (i32.const 8)
+                    )
+                  )
+                  (f64.add
+                    (tee_local $34
+                      (f64.add
+                        (tee_local $42
+                          (f64.load
+                            (get_local $18)
+                          )
+                        )
+                        (tee_local $35
+                          (f64.add
+                            (f64.mul
+                              (get_local $38)
+                              (get_local $34)
+                            )
+                            (f64.mul
+                              (get_local $35)
+                              (get_local $36)
+                            )
+                          )
+                        )
+                      )
+                    )
+                    (tee_local $28
+                      (f64.add
+                        (tee_local $38
+                          (f64.add
+                            (f64.mul
+                              (get_local $31)
+                              (get_local $26)
+                            )
+                            (f64.mul
+                              (get_local $28)
+                              (get_local $29)
+                            )
+                          )
+                        )
+                        (tee_local $36
+                          (f64.add
+                            (f64.mul
+                              (get_local $24)
+                              (get_local $19)
+                            )
+                            (f64.mul
+                              (get_local $21)
+                              (get_local $22)
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (f64.store
+                  (get_local $30)
+                  (f64.sub
+                    (tee_local $35
+                      (f64.sub
+                        (get_local $42)
+                        (get_local $35)
+                      )
+                    )
+                    (tee_local $26
+                      (f64.mul
+                        (f64.sub
+                          (get_local $32)
+                          (get_local $25)
+                        )
+                        (get_local $7)
+                      )
+                    )
+                  )
+                )
+                (f64.store
+                  (get_local $27)
+                  (f64.add
+                    (tee_local $40
+                      (f64.sub
+                        (get_local $40)
+                        (get_local $39)
+                      )
+                    )
+                    (tee_local $38
+                      (f64.mul
+                        (f64.sub
+                          (get_local $38)
+                          (get_local $36)
+                        )
+                        (get_local $7)
+                      )
+                    )
+                  )
+                )
+                (f64.store
+                  (get_local $37)
+                  (f64.sub
+                    (get_local $34)
+                    (get_local $28)
+                  )
+                )
+                (f64.store
+                  (get_local $2)
+                  (f64.sub
+                    (get_local $41)
+                    (get_local $33)
+                  )
+                )
+                (f64.store
+                  (get_local $23)
+                  (f64.add
+                    (get_local $35)
+                    (get_local $26)
+                  )
+                )
+                (f64.store
+                  (get_local $20)
+                  (f64.sub
+                    (get_local $40)
+                    (get_local $38)
+                  )
+                )
+                (set_local $4
+                  (i32.add
+                    (get_local $4)
+                    (get_local $16)
+                  )
+                )
+                (set_local $46
+                  (i32.add
+                    (get_local $46)
+                    (get_local $15)
+                  )
+                )
+                (set_local $1
+                  (i32.add
+                    (get_local $1)
+                    (get_local $12)
+                  )
+                )
+                (set_local $5
+                  (i32.add
+                    (get_local $5)
+                    (i32.const 16)
+                  )
+                )
+                (br_if $label$9
+                  (i32.lt_s
+                    (tee_local $47
+                      (i32.add
+                        (get_local $47)
+                        (i32.const 2)
+                      )
+                    )
+                    (get_local $17)
+                  )
+                )
+              )
+            )
+            (set_local $44
+              (i32.add
+                (get_local $44)
+                (get_local $10)
+              )
+            )
+            (br_if $label$7
+              (i32.lt_s
+                (tee_local $45
+                  (i32.add
+                    (get_local $45)
+                    (get_local $8)
+                  )
+                )
+                (get_local $3)
+              )
+            )
+          )
+        )
+        (br_if $label$5
+          (i32.ge_s
+            (tee_local $43
+              (i32.shr_s
+                (get_local $43)
+                (i32.const 2)
+              )
+            )
+            (i32.const 2)
+          )
+        )
       )
     )
-    (else
-      ;; len === 8
-      (loop $transform4
-        (set_local $off
-          (i32.load (i32.add (get_local $bitrevAddr) (get_local $i)))
+  )
+  (func $_Z16singleTransform2PdS_iii (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32)
+    (local $5 i32)
+    (local $6 f64)
+    (local $7 f64)
+    (local $8 f64)
+    (local $9 f64)
+    (set_local $8
+      (f64.load
+        (i32.add
+          (tee_local $5
+            (i32.add
+              (get_local $1)
+              (i32.shl
+                (get_local $3)
+                (i32.const 3)
+              )
+            )
+          )
+          (i32.const 8)
         )
-
-        (call $singleTransform4
-          (i32.add (get_local $outAddr) (get_local $outOff))
-          (i32.add (get_local $dataAddr) (get_local $off))
-          (get_local $step)
-          (get_local $inv)
-        )
-
-        ;; t++
-        (set_local $i (i32.add
-          (get_local $i) (i32.const 4)
-        ))
-
-        ;; loop while outOff += len < size
-        (tee_local $outOff (i32.add
-          (get_local $outOff) (get_local $len)
-        ))
-        (br_if $transform4 (i32.lt_u (get_local $size)))
       )
-    ))
-
-    ;; shift by 2
-    (tee_local $step (i32.shr_u (get_local $step) (i32.const 2)))
-
-    (if (i32.gt_u (i32.const 8))
-    (loop $step
-      (tee_local $len (i32.shl (i32.div_u (get_local $size) (get_local $step)) (i32.const 4)))
-      (i32.shr_u (i32.const 2))
-      (set_local $quarterLen)
-
-      (set_local $outOff (i32.const 0))
-
-      (loop $offset
-        (set_local $limit (i32.add (get_local $outOff) (get_local $quarterLen)))
-        (set_local $i (get_local $outOff))
-        (set_local $k (i32.const 0))
-
-        (loop $full
-          ;; i
-          (set_local $Ar (f64.load (tee_local $curAddr
-            (i32.add (get_local $outAddr) (get_local $i))
-          )))
-          ;; i + 8
-          (set_local $Ai (f64.load (tee_local $curAddr
-            (i32.add (get_local $curAddr) (i32.const 8))
-          )))
-          ;; i + quarterLen + 8
-          (set_local $Bi (f64.load (tee_local $curAddr
-            (i32.add (get_local $curAddr) (get_local $quarterLen))
-          )))
-          ;; i + quarterLen
-          (set_local $Br (f64.load (tee_local $curAddr
-            (i32.sub (get_local $curAddr) (i32.const 8))
-          )))
-          ;; i + quarterLen * 2
-          (set_local $Cr (f64.load (tee_local $curAddr
-            (i32.add (get_local $curAddr) (get_local $quarterLen))
-          )))
-          ;; i + quarterLen * 2 + 8
-          (set_local $Ci (f64.load (tee_local $curAddr
-            (i32.add (get_local $curAddr) (i32.const 8))
-          )))
-          ;; i + quarterLen * 3 + 8
-          (set_local $Di (f64.load (tee_local $curAddr
-            (i32.add (get_local $curAddr) (get_local $quarterLen))
-          )))
-          ;; i + quarterLen * 3
-          (set_local $Dr (f64.load (tee_local $curAddr
-            (i32.sub (get_local $curAddr) (i32.const 8))
-          )))
-
-          ;; Middle values
-
-          ;; k
-          (set_local $tableBr (f64.load (tee_local $curAddr
-            (i32.add (get_local $tableAddr) (get_local $k))
-          )))
-          ;; k + 8
-          (set_local $tableBi (f64.mul
-            (get_local $inv)
-            (f64.load (tee_local $curAddr
-              (i32.add (get_local $curAddr) (i32.const 8))
-            ))
-          ))
-          ;; 2 * k + 8
-          (set_local $tableCi (f64.mul
-            (get_local $inv)
-            (f64.load (tee_local $curAddr
-              (i32.add (get_local $curAddr) (get_local $k))
-            ))
-          ))
-          ;; 2 * k
-          (set_local $tableCr (f64.load (tee_local $curAddr
-            (i32.sub (get_local $curAddr) (i32.const 8))
-          )))
-          ;; 3 * k
-          (set_local $tableDr (f64.load (tee_local $curAddr
-            (i32.add (get_local $curAddr) (get_local $k))
-          )))
-          ;; 3 * k + 8
-          (set_local $tableDi (f64.mul
-            (get_local $inv)
-            (f64.load (tee_local $curAddr
-              (i32.add (get_local $curAddr) (i32.const 8))
-            ))
-          ))
-
-          (set_local $MBr (f64.sub
-            (f64.mul (get_local $Br) (get_local $tableBr))
-            (f64.mul (get_local $Bi) (get_local $tableBi))
-          ))
-          (set_local $MBi (f64.add
-            (f64.mul (get_local $Br) (get_local $tableBi))
-            (f64.mul (get_local $Bi) (get_local $tableBr))
-          ))
-          (set_local $MCr (f64.sub
-            (f64.mul (get_local $Cr) (get_local $tableCr))
-            (f64.mul (get_local $Ci) (get_local $tableCi))
-          ))
-          (set_local $MCi (f64.add
-            (f64.mul (get_local $Cr) (get_local $tableCi))
-            (f64.mul (get_local $Ci) (get_local $tableCr))
-          ))
-          (set_local $MDr (f64.sub
-            (f64.mul (get_local $Dr) (get_local $tableDr))
-            (f64.mul (get_local $Di) (get_local $tableDi))
-          ))
-          (set_local $MDi (f64.add
-            (f64.mul (get_local $Dr) (get_local $tableDi))
-            (f64.mul (get_local $Di) (get_local $tableDr))
-          ))
-
-          ;; Pre-Final values
-          (set_local $T0r (f64.add (get_local $Ar) (get_local $MCr)))
-          (set_local $T0i (f64.add (get_local $Ai) (get_local $MCi)))
-          (set_local $T1r (f64.sub (get_local $Ar) (get_local $MCr)))
-          (set_local $T1i (f64.sub (get_local $Ai) (get_local $MCi)))
-          (set_local $T2r (f64.add (get_local $MBr) (get_local $MDr)))
-          (set_local $T2i (f64.add (get_local $MBi) (get_local $MDi)))
-          (set_local $T3r (f64.mul
-            (get_local $inv)
-            (f64.sub (get_local $MBr) (get_local $MDr))
-          ))
-          (set_local $T3i (f64.mul
-            (get_local $inv)
-            (f64.sub (get_local $MBi) (get_local $MDi))
-          ))
-
-          ;;(if (i32.gt_u (get_local $k) (i32.const 0))
-          ;;  (return (f64.add (get_local $T0r) (get_local $T2r)))
-          ;;)
-
-          ;; Final values
-          (f64.store
-            ;; i
-            (tee_local $curAddr (i32.add (get_local $outAddr) (get_local $i)))
-            (f64.add (get_local $T0r) (get_local $T2r))
+    )
+    (set_local $9
+      (f64.load
+        (i32.add
+          (tee_local $3
+            (i32.add
+              (get_local $1)
+              (i32.shl
+                (i32.add
+                  (get_local $4)
+                  (get_local $3)
+                )
+                (i32.const 3)
+              )
+            )
           )
-          (f64.store
-            ;; i + 8
-            (tee_local $curAddr (i32.add (get_local $curAddr) (i32.const 8)))
-            (f64.add (get_local $T0i) (get_local $T2i))
-          )
-          (f64.store
-            ;; i + quarterLen + 8
-            (tee_local $curAddr (i32.add (get_local $curAddr) (get_local $quarterLen)))
-            (f64.sub (get_local $T1i) (get_local $T3r))
-          )
-          (f64.store
-            ;; i + quarterLen
-            (tee_local $curAddr (i32.sub (get_local $curAddr) (i32.const 8)))
-            (f64.add (get_local $T1r) (get_local $T3i))
-          )
-          (f64.store
-            ;; i + quarterLen * 2
-            (tee_local $curAddr (i32.add (get_local $curAddr) (get_local $quarterLen)))
-            (f64.sub (get_local $T0r) (get_local $T2r))
-          )
-          (f64.store
-            ;; i + quarterLen * 2 + 8
-            (tee_local $curAddr (i32.add (get_local $curAddr) (i32.const 8)))
-            (f64.sub (get_local $T0i) (get_local $T2i))
-          )
-          (f64.store
-            ;; i + quarterLen * 3 + 8
-            (tee_local $curAddr (i32.add (get_local $curAddr) (get_local $quarterLen)))
-            (f64.add (get_local $T1i) (get_local $T3r))
-          )
-          (f64.store
-            ;; i + quarterLen * 3
-            (tee_local $curAddr (i32.sub (get_local $curAddr) (i32.const 8)))
-            (f64.sub (get_local $T1r) (get_local $T3i))
-          )
-
-          ;; i += 16
-          (set_local $i (i32.add (get_local $i) (i32.const 16)))
-          ;; k += step
-          (set_local $k (i32.add (get_local $k) (get_local $step)))
-
-          ;; loop while i < limit
-          (br_if $full (i32.lt_u (get_local $i) (get_local $limit)))
+          (i32.const 8)
         )
-
-        ;; outOff += len
-        (set_local $outOff (i32.add (get_local $outOff) (get_local $len)))
-        ;; loop while outOff < size
-        (br_if $offset (i32.lt_u (get_local $outOff) (get_local $size)))
       )
-
-      ;; step >>= 2
-      (tee_local $step (i32.shr_u (get_local $step) (i32.const 2)))
-      ;; loop while step > 8
-      (br_if $step (i32.gt_u (i32.const 8)))
-    ))
-
-    (return (f64.convert_u/i32 (get_local $loopCnt)))
+    )
+    (f64.store
+      (tee_local $1
+        (i32.add
+          (get_local $0)
+          (i32.shl
+            (get_local $2)
+            (i32.const 3)
+          )
+        )
+      )
+      (f64.add
+        (tee_local $6
+          (f64.load
+            (get_local $5)
+          )
+        )
+        (tee_local $7
+          (f64.load
+            (get_local $3)
+          )
+        )
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 16)
+      )
+      (f64.sub
+        (get_local $6)
+        (get_local $7)
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 8)
+      )
+      (f64.add
+        (get_local $8)
+        (get_local $9)
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 24)
+      )
+      (f64.sub
+        (get_local $8)
+        (get_local $9)
+      )
+    )
+  )
+  (func $_Z16singleTransform4PdS_iiii (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32) (param $5 i32)
+    (local $6 i32)
+    (local $7 f64)
+    (local $8 f64)
+    (local $9 f64)
+    (local $10 i32)
+    (local $11 f64)
+    (local $12 i32)
+    (local $13 f64)
+    (local $14 f64)
+    (local $15 f64)
+    (local $16 f64)
+    (local $17 f64)
+    (local $18 f64)
+    (set_local $15
+      (f64.load
+        (i32.add
+          (tee_local $10
+            (i32.add
+              (get_local $1)
+              (i32.shl
+                (get_local $4)
+                (i32.const 3)
+              )
+            )
+          )
+          (i32.const 8)
+        )
+      )
+    )
+    (set_local $16
+      (f64.load
+        (i32.add
+          (tee_local $12
+            (i32.add
+              (get_local $1)
+              (i32.shl
+                (i32.add
+                  (i32.shl
+                    (get_local $5)
+                    (i32.const 1)
+                  )
+                  (get_local $4)
+                )
+                (i32.const 3)
+              )
+            )
+          )
+          (i32.const 8)
+        )
+      )
+    )
+    (set_local $17
+      (f64.load
+        (i32.add
+          (tee_local $6
+            (i32.add
+              (get_local $1)
+              (i32.shl
+                (i32.add
+                  (get_local $5)
+                  (get_local $4)
+                )
+                (i32.const 3)
+              )
+            )
+          )
+          (i32.const 8)
+        )
+      )
+    )
+    (set_local $18
+      (f64.load
+        (i32.add
+          (tee_local $4
+            (i32.add
+              (get_local $1)
+              (i32.shl
+                (i32.add
+                  (i32.mul
+                    (get_local $5)
+                    (i32.const 3)
+                  )
+                  (get_local $4)
+                )
+                (i32.const 3)
+              )
+            )
+          )
+          (i32.const 8)
+        )
+      )
+    )
+    (f64.store
+      (tee_local $1
+        (i32.add
+          (get_local $0)
+          (i32.shl
+            (get_local $3)
+            (i32.const 3)
+          )
+        )
+      )
+      (f64.add
+        (tee_local $14
+          (f64.add
+            (tee_local $11
+              (f64.load
+                (get_local $10)
+              )
+            )
+            (tee_local $13
+              (f64.load
+                (get_local $12)
+              )
+            )
+          )
+        )
+        (tee_local $9
+          (f64.add
+            (tee_local $7
+              (f64.load
+                (get_local $6)
+              )
+            )
+            (tee_local $8
+              (f64.load
+                (get_local $4)
+              )
+            )
+          )
+        )
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 32)
+      )
+      (f64.sub
+        (get_local $14)
+        (get_local $9)
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 8)
+      )
+      (f64.add
+        (tee_local $14
+          (f64.add
+            (get_local $15)
+            (get_local $16)
+          )
+        )
+        (tee_local $9
+          (f64.add
+            (get_local $17)
+            (get_local $18)
+          )
+        )
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 24)
+      )
+      (f64.sub
+        (tee_local $15
+          (f64.sub
+            (get_local $15)
+            (get_local $16)
+          )
+        )
+        (tee_local $7
+          (f64.mul
+            (f64.sub
+              (get_local $7)
+              (get_local $8)
+            )
+            (tee_local $16
+              (f64.convert_s/i32
+                (get_local $2)
+              )
+            )
+          )
+        )
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 40)
+      )
+      (f64.sub
+        (get_local $14)
+        (get_local $9)
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 16)
+      )
+      (f64.add
+        (tee_local $11
+          (f64.sub
+            (get_local $11)
+            (get_local $13)
+          )
+        )
+        (tee_local $16
+          (f64.mul
+            (f64.sub
+              (get_local $17)
+              (get_local $18)
+            )
+            (get_local $16)
+          )
+        )
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 48)
+      )
+      (f64.sub
+        (get_local $11)
+        (get_local $16)
+      )
+    )
+    (f64.store
+      (i32.add
+        (get_local $1)
+        (i32.const 56)
+      )
+      (f64.add
+        (get_local $15)
+        (get_local $7)
+      )
+    )
   )
 
-  ;; radix-4
-  ;;
-  ;; NOTE: Only called for len=8
-  (func $singleTransform4
-    (param $outAddr i32)
-    (param $dataAddr i32)
-    (param $step i32)
-    (param $inv f64)
-
-    (local $Ar f64)
-    (local $Ai f64)
-    (local $Br f64)
-    (local $Bi f64)
-    (local $Cr f64)
-    (local $Ci f64)
-    (local $Dr f64)
-    (local $Di f64)
-
-    (local $T0r f64)
-    (local $T0i f64)
-    (local $T1r f64)
-    (local $T1i f64)
-    (local $T2r f64)
-    (local $T2i f64)
-    (local $T3r f64)
-    (local $T3i f64)
-
-    (set_local $Ar (f64.load (get_local $dataAddr)))
-    ;; offset + 1
-    (set_local $Ai (f64.load (tee_local $dataAddr
-      (i32.add (get_local $dataAddr) (i32.const 8))
-    )))
-    ;; offset + 1 + step
-    (set_local $Bi (f64.load (tee_local $dataAddr
-      (i32.add (get_local $dataAddr) (get_local $step))
-    )))
-    ;; offset + step
-    (set_local $Br (f64.load (tee_local $dataAddr
-      (i32.sub (get_local $dataAddr) (i32.const 8))
-    )))
-    ;; offset + step * 2
-    (set_local $Cr (f64.load (tee_local $dataAddr
-      (i32.add (get_local $dataAddr) (get_local $step))
-    )))
-    ;; offset + step * 2 + 1
-    (set_local $Ci (f64.load (tee_local $dataAddr
-      (i32.add (get_local $dataAddr) (i32.const 8))
-    )))
-    ;; offset + step * 3 + 1
-    (set_local $Di (f64.load (tee_local $dataAddr
-      (i32.add (get_local $dataAddr) (get_local $step))
-    )))
-    ;; offset + step * 3
-    (set_local $Dr (f64.load (tee_local $dataAddr
-      (i32.sub (get_local $dataAddr) (i32.const 8))
-    )))
-
-    (set_local $T0r (f64.add (get_local $Ar) (get_local $Cr)))
-    (set_local $T0i (f64.add (get_local $Ai) (get_local $Ci)))
-    (set_local $T1r (f64.sub (get_local $Ar) (get_local $Cr)))
-    (set_local $T1i (f64.sub (get_local $Ai) (get_local $Ci)))
-    (set_local $T2r (f64.add (get_local $Br) (get_local $Dr)))
-    (set_local $T2i (f64.add (get_local $Bi) (get_local $Di)))
-    (set_local $T3r (f64.mul
-      (get_local $inv)
-      (f64.sub (get_local $Br) (get_local $Dr))
-    ))
-    (set_local $T3i (f64.mul
-      (get_local $inv)
-      (f64.sub (get_local $Bi) (get_local $Di))
-    ))
-
-    (f64.store
-      (get_local $outAddr)
-      (f64.add (get_local $T0r) (get_local $T2r))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.add (get_local $T0i) (get_local $T2i))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.add (get_local $T1r) (get_local $T3i))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.sub (get_local $T1i) (get_local $T3r))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.sub (get_local $T0r) (get_local $T2r))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.sub (get_local $T0i) (get_local $T2i))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.sub (get_local $T1r) (get_local $T3i))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.add (get_local $T1i) (get_local $T3r))
-    )
-  )
-
-  ;; radix-2 implementation
-  ;;
-  ;; NOTE: Only called for len=4
-  (func $singleTransform2
-    (param $outAddr i32)
-    (param $dataAddr i32)
-    (param $step i32)
-
-    (local $evenR f64)
-    (local $evenI f64)
-    (local $oddR f64)
-    (local $oddI f64)
-
-    (set_local $evenR (f64.load (get_local $dataAddr)))
-    ;; offset + 1
-    (set_local $evenI (f64.load (tee_local $dataAddr
-      (i32.add (get_local $dataAddr) (i32.const 8))
-    )))
-    ;; offset + 1 + step
-    (set_local $oddI (f64.load (tee_local $dataAddr
-      (i32.add (get_local $dataAddr) (get_local $step))
-    )))
-    ;; offset + step
-    (set_local $oddR (f64.load (tee_local $dataAddr
-      (i32.sub (get_local $dataAddr) (i32.const 8))
-    )))
-
-    (f64.store
-      (get_local $outAddr)
-      (f64.add (get_local $evenR) (get_local $oddR))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.add (get_local $evenI) (get_local $oddI))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.sub (get_local $evenR) (get_local $oddR))
-    )
-    (f64.store
-      (tee_local $outAddr (i32.add (get_local $outAddr) (i32.const 8)))
-      (f64.sub (get_local $evenI) (get_local $oddI))
-    )
-  )
 )

@@ -46,7 +46,7 @@ export default function FFT (size) {
   this._bitrev = new Uint32Array(memory.buffer, bitReversalAddr, 1 << this._width);
   // if (!alreadyComputed) // disabled for benchmark equality
     for (var shift = 0; shift < this._width; shift += 2) {
-      var revShift = this._width - shift + 1;
+      var revShift = this._width - shift - 2;
       for (let j = 0; j < this._bitrev.length; j++)
         this._bitrev[j] |= ((j >>> shift) & 3) << revShift;
     }
@@ -84,14 +84,14 @@ FFT.prototype.transform = function(out, data) {
   if (out.byteOffset === data.byteOffset)
     throw new Error('Input and output buffers must be different');
 
-  transform4(out.byteOffset, data.byteOffset, 1, this._csize * 8, this._width + 3, this._bitrev.byteOffset, this.table.byteOffset);
+  transform4(out.byteOffset, data.byteOffset, 1, this._csize, this._width, this._bitrev.byteOffset, this.table.byteOffset);
 };
 
 FFT.prototype.inverseTransform = function(out, data) {
   if (out.byteOffset === data.byteOffset)
     throw new Error('Input and output buffers must be different');
 
-  transform4(out.byteOffset, data.byteOffset, -1, this._csize * 8, this._width + 3, this._bitrev.byteOffset, this.table.byteOffset);
+  transform4(out.byteOffset, data.byteOffset, -1, this._csize, this._width, this._bitrev.byteOffset, this.table.byteOffset);
   for (var i = 0; i < out.length; i++)
     out[i] /= this.size;
 };
