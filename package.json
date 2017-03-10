@@ -10,8 +10,7 @@
     "build": "webpack --progress --colors -p --output-library FFTJS",
     "test": "node-esml test/runner.js",
     "version": "npm run build && git add dist/",
-    "compile-native": "wast2wasm native/fft.wast -o native/fft.wasm",
-    "test-native": "node-esml test/runner.js"
+    "compile-native": "compile.sh"
   },
   "repository": {
     "type": "git",
