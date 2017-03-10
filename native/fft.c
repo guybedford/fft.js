@@ -1,15 +1,17 @@
-//#include <stdlib.h>
+#include <stdlib.h>
+
+int main () {}
 
 void singleTransform2(double out[], double data[], int outOff, int off, int step);
 void singleTransform4(double out[], double data[], int inv, int outOff, int off, int step);
 
-/* float* allocateNode (size_t size, int len) {
+float* allocateNode (size_t size, int len) {
   return (float*) malloc(size * len);
 }
 
 void freeNode (int* addr) {
   return free(addr);
-} */
+}
 
 void transform4(double out[], double data[], int inv, int size, int width, int bitrev[], double table[]) {
   // Initial step (permute and transform)
