@@ -16,6 +16,7 @@ describe('FFT.js', () => {
     const f = new FFT(8);
 
     assert.strictEqual(f.table.length, 16);
+    f.dispose();
   });
 
   it('should throw on invalid table size', () => {
@@ -53,6 +54,7 @@ describe('FFT.js', () => {
     assert.strictEqual(ca[0], 0);
 
     f.disposeBuffer(ca);
+    f.dispose();
   });
 
   it('should convert to complex array', () => {
@@ -62,6 +64,7 @@ describe('FFT.js', () => {
     assert.deepEqual(ca, [ 1, 0, 2, 0, 3, 0, 4, 0 ]);
 
     f.disposeBuffer(ca);
+    f.dispose();
   });
 
   it('should convert from complex array', () => {
@@ -73,6 +76,7 @@ describe('FFT.js', () => {
                      [ 1, 2, 3, 4 ]);
 
     f.disposeBuffer(ca);
+    f.dispose();
   });
 
   it('should throw on invalid transform inputs', () => {
@@ -84,6 +88,7 @@ describe('FFT.js', () => {
     }, /must be different/);
 
     f.disposeBuffer(output);
+    f.dispose();
   });
 
   it('should transform trivial radix-2 case', () => {
@@ -107,6 +112,7 @@ describe('FFT.js', () => {
     f.disposeBuffer(data);
 
     f.disposeBuffer(out);
+    f.dispose();
   });
 
   it('should transform trivial case', () => {
@@ -124,6 +130,7 @@ describe('FFT.js', () => {
     f.disposeBuffer(data);
 
     f.disposeBuffer(out);
+    f.dispose();
   });
 
   it('should inverse-transform', () => {
@@ -138,6 +145,7 @@ describe('FFT.js', () => {
 
     f.disposeBuffer(data);
     f.disposeBuffer(out);
+    f.dispose();
   });
 
   it('should transform big recursive case', () => {
@@ -155,6 +163,7 @@ describe('FFT.js', () => {
 
     f.disposeBuffer(out);
     f.disposeBuffer(data);
+    f.dispose();
   });
 
   it('should transform big recursive radix-2 case', () => {
@@ -172,6 +181,7 @@ describe('FFT.js', () => {
 
     f.disposeBuffer(out);
     f.disposeBuffer(data);
+    f.dispose();
   });
 
   function externalLib(generator, size) {

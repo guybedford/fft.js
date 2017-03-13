@@ -1,7 +1,5 @@
-import { memory, getOrAllocatePrecomputation, allocateBuffer, freeBuffer,
+import { memory, allocateFloat64Array, freeFloat64Array,
   transform4, singleTransform4, singleTransform2 } from './fft.wasm';
-
-const boolReturnValue = 0x80000000;
 
 export default function FFT (size) {
   this.size = size | 0;
@@ -10,11 +8,7 @@ export default function FFT (size) {
 
   this._csize = size << 1;
 
-  var tableAddr = getOrAllocatePrecomputation(this._csize * 8 + 0x80000000);
-
-  var alreadyComputed = tableAddr & boolReturnValue;
-  if (alreadyComputed)
-    tableAddr ^= boolReturnValue;
+  var tableAddr = allocateFloat64Array(this._csize);
 
   // NOTE: Use of `var` is intentional for old V8 versions
   var table = new Float64Array(memory.buffer, tableAddr, this._csize);
@@ -36,11 +30,7 @@ export default function FFT (size) {
   //   * Otherwise it is the same as `power` to give len=4
   this._width = power % 2 === 0 ? power - 1 : power;
 
-  var bitReversalAddr = getOrAllocatePrecomputation((1 << this._width) * 4);
-
-  var alreadyComputed = bitReversalAddr & boolReturnValue;
-  if (alreadyComputed)
-    bitReversalAddr ^= boolReturnValue;
+  var bitReversalAddr = allocateFloat64Array(1 << (this._width - 1), true);
 
   // Pre-compute bit-reversal patterns
   this._bitrev = new Uint32Array(memory.buffer, bitReversalAddr, 1 << this._width);
@@ -52,6 +42,11 @@ export default function FFT (size) {
     }
 };
 
+FFT.prototype.dispose = function () {
+  freeFloat64Array(this._bitrev.byteOffset);
+  freeFloat64Array(this.table.byteOffset);
+};
+
 FFT.prototype.fromComplexArray = function(complex, arr) {
   var res = arr || new Float64Array(complex.length >>> 1);
   for (var i = 0; i < complex.length; i += 2)
@@ -61,14 +56,12 @@ FFT.prototype.fromComplexArray = function(complex, arr) {
 
 FFT.prototype.createComplexArray = function(skipClearMem) {
   // allocate buffer to WASM memory
-  var addr = allocateBuffer(this._csize, skipClearMem ? 1 : 0);
+  var addr = allocateFloat64Array(this._csize, skipClearMem ? false : true);
   return new Float64Array(memory.buffer, addr, this._csize);
 };
 
 FFT.prototype.disposeBuffer = function (arr) {
-  if (arr.buffer !== memory.buffer)
-    throw new TypeError('Can only dispose complex array.');
-  freeBuffer(arr.byteOffset, arr.byteLength);
+  freeFloat64Array(arr.byteOffset);
 };
 
 FFT.prototype.toComplexArray = function(input, arr) {
@@ -84,6 +77,7 @@ FFT.prototype.transform = function(out, data) {
   if (out.byteOffset === data.byteOffset)
     throw new Error('Input and output buffers must be different');
 
+  // console.log('transform on data: ' + out.byteOffset + ', ' + data.byteOffset);
   transform4(out.byteOffset, data.byteOffset, 1, this._csize, this._width, this._bitrev.byteOffset, this.table.byteOffset);
 };
 

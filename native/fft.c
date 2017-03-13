@@ -1,19 +1,42 @@
-#include <stdlib.h>
+/*
+(import "./log.js" "log" (func $log (param i32)))
 
-int main () {}
+(func $sbrk (param i32) (result i32)
+ (grow_memory (i32.shr_u (get_local 0) (i32.const 16)))
+ (i32.shl (i32.const 16))
+)
+*/
+
+#include "lib/stddef.c"
+#include "lib/malloc.c"
+
+void *sbrk(ptrdiff_t increment);
+void *calloc(size_t nmemb, size_t size);
+void *malloc(size_t size);
+void free(void *ptr);
 
 void singleTransform2(double out[], double data[], int outOff, int off, int step);
 void singleTransform4(double out[], double data[], int inv, int outOff, int off, int step);
+double* allocateFloat64Array(unsigned int len, int clearMem);
+void freeFloat64Array(double* newAddr);
 
-float* allocateNode (size_t size, int len) {
-  return (float*) malloc(size * len);
+void start () {
+
 }
 
-void freeNode (int* addr) {
+// simple memory allocation
+double* allocateFloat64Array (unsigned int len, int clearMem) {
+  if (clearMem)
+    return calloc((size_t) len, sizeof(double));
+  else
+    return malloc(len * sizeof(double));
+}
+
+void freeFloat64Array (double* addr) {
   return free(addr);
 }
 
-void transform4(double out[], double data[], int inv, int size, int width, int bitrev[], double table[]) {
+void transform4(double out[], double data[], int inv, unsigned int size, unsigned int width, unsigned int bitrev[], double table[]) {
   // Initial step (permute and transform)
   int step = 1 << width;
   int len = (size / step) << 1;
