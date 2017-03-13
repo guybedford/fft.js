@@ -175,13 +175,13 @@ function realTransform(size) {
 }
 
 const benchmarks = [
-  /* { title: 'table construction', suite: construct(16384) },
+  { title: 'table construction', suite: construct(16384) },
   { title: 'transform size=2048', suite: transform(2048) },
   { title: 'transform size=4096', suite: transform(4096) },
   { title: 'transform size=8192', suite: transform(8192) },
   { title: 'transform size=16384', suite: transform(16384) },
   { title: 'realTransform size=2048', suite: realTransform(2048) },
-  { title: 'realTransform size=4096', suite: realTransform(4096) }, */
+  { title: 'realTransform size=4096', suite: realTransform(4096) },
   { title: 'realTransform size=8192', suite: realTransform(8192) },
   { title: 'realTransform size=16384', suite: realTransform(16384) }
 ];

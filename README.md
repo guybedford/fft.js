@@ -14,51 +14,9 @@ WASM execution uses the Node ES Module Loader project (https://github.com/Module
 npm install && npm run bench
 ```
 
-Latest benchmark running against NodeJS 8.0.0-nightly20170226813b312b0e, with V8 5.6.326.55.
-
-## Usage
-
-```js
-const FFT = require('fft.js');
-
-const f = new FFT(4096);
-
-const input = new Array(4096);
-input.fill(0);
-
-const out = f.createComplexArray();
-```
-
-If `data` has just real numbers as is the case when `toComplexArray` is
-used - real FFT may be run to compute it 25% faster:
-```js
-const realInput = new Array(f.size);
-f.realTransform(out, realInput);
-```
-
-`realTransform` fills just the left half of the `out`, so if the full
-spectrum is needed (which is symmetric):
-```js
-f.completeSpectrum(out);
-```
-
-If `data` on other hand is a complex array:
-```js
-const data = f.toComplexArray(input);
-f.transform(out, data);
-```
-
-Inverse fourier transform:
-```js
-f.inverseTransform(data, out);
-
-// necessary to free WASM memory as WeakRefs aren't a thing yet
-f.disposeBuffer(data);
-f.disposeBuffer(out);
-f.dispose();
-```
-
 ## Benchmark
+
+Latest benchmark running against NodeJS 8.0.0-nightly20170226813b312b0e, with V8 5.6.326.55.
 
 ```
 $ npm run bench
