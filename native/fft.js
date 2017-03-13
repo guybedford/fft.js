@@ -1,5 +1,5 @@
 import { memory, allocateFloat64Array, freeFloat64Array,
-  transform4, singleTransform4, singleTransform2 } from './fft.wasm';
+  transform4, realTransform4 } from './fft.wasm';
 
 export default function FFT (size) {
   this.size = size | 0;
@@ -60,6 +60,12 @@ FFT.prototype.createComplexArray = function(skipClearMem) {
   return new Float64Array(memory.buffer, addr, this._csize);
 };
 
+FFT.prototype.createRealArray = function(skipClearMem) {
+  // allocate buffer to WASM memory
+  var addr = allocateFloat64Array(this.size, skipClearMem ? false : true);
+  return new Float64Array(memory.buffer, addr, this.size);
+};
+
 FFT.prototype.disposeBuffer = function (arr) {
   freeFloat64Array(arr.byteOffset);
 };
@@ -73,19 +79,35 @@ FFT.prototype.toComplexArray = function(input, arr) {
   return res;
 };
 
+FFT.prototype.completeSpectrum = function(spectrum) {
+  var size = this._csize;
+  var half = size >>> 1;
+  for (var i = 2; i < half; i += 2) {
+    spectrum[size - i] = spectrum[i];
+    spectrum[size - i + 1] = -spectrum[i + 1];
+  }
+};
+
 FFT.prototype.transform = function(out, data) {
   if (out.byteOffset === data.byteOffset)
     throw new Error('Input and output buffers must be different');
 
   // console.log('transform on data: ' + out.byteOffset + ', ' + data.byteOffset);
-  transform4(out.byteOffset, data.byteOffset, 1, this._csize, this._width, this._bitrev.byteOffset, this.table.byteOffset);
+  transform4(out.byteOffset, data.byteOffset, 0, this._csize, this._width, this._bitrev.byteOffset, this.table.byteOffset);
+};
+
+FFT.prototype.realTransform = function realTransform(out, data) {
+  if (out.byteOffset === data.byteOffset)
+    throw new Error('Input and output buffers must be different');
+
+  realTransform4(out.byteOffset, data.byteOffset, 0, this._csize, this._width, this._bitrev.byteOffset, this.table.byteOffset);
 };
 
 FFT.prototype.inverseTransform = function(out, data) {
   if (out.byteOffset === data.byteOffset)
     throw new Error('Input and output buffers must be different');
 
-  transform4(out.byteOffset, data.byteOffset, -1, this._csize, this._width, this._bitrev.byteOffset, this.table.byteOffset);
+  transform4(out.byteOffset, data.byteOffset, 1, this._csize, this._width, this._bitrev.byteOffset, this.table.byteOffset);
   for (var i = 0; i < out.length; i++)
     out[i] /= this.size;
 };

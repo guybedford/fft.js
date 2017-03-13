@@ -211,7 +211,7 @@ describe('FFT.js', () => {
       const complex = new FFT(size);
 
       const input = complex.createComplexArray();
-      const realInput = new Array(size);
+      const realInput = complex.createRealArray();
       for (let i = 0; i < input.length; i += 2) {
         input[i] = generator(i >>> 1);
         realInput[i >>> 1] = input[i];
@@ -228,6 +228,7 @@ describe('FFT.js', () => {
 
       f.disposeBuffer(out);
       f.disposeBuffer(input);
+      f.disposeBuffer(realInput);
       f.dispose();
     });
   }
@@ -235,9 +236,10 @@ describe('FFT.js', () => {
   function realVsExternal(generator, size) {
     it('should verify real transform against other library', () => {
       const ex = new external.complex(size, false);
+      const f = new FFT(size);
 
       const input = new Float64Array(size * 2);
-      const realInput = new Array(size);
+      const realInput = f.createRealArray();
       for (let i = 0; i < input.length; i += 2) {
         input[i] = generator(i >>> 1);
         realInput[i >>> 1] = input[i];
@@ -246,14 +248,13 @@ describe('FFT.js', () => {
 
       ex.simple(expected, input, 'complex');
 
-      const f = new FFT(size);
       const out = f.createComplexArray();
       f.realTransform(out, realInput);
       f.completeSpectrum(out);
       fixRoundEqual(out, expected);
 
       f.disposeBuffer(out);
-      f.disposeBuffer(input);
+      f.disposeBuffer(realInput);
       f.dispose();
     });
   }
