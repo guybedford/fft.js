@@ -70,7 +70,7 @@ function addSelfNative(suite, size) {
   const data = f.toComplexArray(input);
   const out = f.createComplexArray();
 
-  suite.add('fft.js wasm', () => {
+  addFiltered(suite, 'fft.js wasm', () => {
     f.transform(out, data);
   });
 
@@ -140,6 +140,18 @@ function addRealSelf(suite, size) {
   });
 }
 
+function addRealNative(suite, size) {
+  const f = new FFT_WASM(size);
+  const input = createInput(f.size);
+  const data = f.createComplexArray();
+  f.toComplexArray(input, data);
+  const out = f.createComplexArray();
+
+  addFiltered(suite, 'fft.js wasm', () => {
+    f.realTransform(out, data);
+  });
+}
+
 function addFourierTransform(suite, size) {
   const forward = external.fourierTransform;
 
@@ -156,19 +168,20 @@ function realTransform(size) {
   const suite = new benchmark.Suite();
 
   addRealSelf(suite, size);
+  addRealNative(suite, size);
   addFourierTransform(suite, size);
 
   return suite;
 }
 
 const benchmarks = [
-  { title: 'table construction', suite: construct(16384) },
+  /* { title: 'table construction', suite: construct(16384) },
   { title: 'transform size=2048', suite: transform(2048) },
   { title: 'transform size=4096', suite: transform(4096) },
   { title: 'transform size=8192', suite: transform(8192) },
   { title: 'transform size=16384', suite: transform(16384) },
   { title: 'realTransform size=2048', suite: realTransform(2048) },
-  { title: 'realTransform size=4096', suite: realTransform(4096) },
+  { title: 'realTransform size=4096', suite: realTransform(4096) }, */
   { title: 'realTransform size=8192', suite: realTransform(8192) },
   { title: 'realTransform size=16384', suite: realTransform(16384) }
 ];
