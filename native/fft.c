@@ -6,14 +6,15 @@
  (i32.shl (i32.const 16))
 )
 */
-
 #include "lib/stddef.c"
-#include "lib/malloc.c"
 
-void *sbrk(ptrdiff_t increment);
 void *calloc(size_t nmemb, size_t size);
 void *malloc(size_t size);
 void free(void *ptr);
+
+#include "lib/malloc.c"
+
+void *sbrk(ptrdiff_t increment);
 
 void singleTransform2(double out[], double data[], int outOff, int off, int step);
 void singleTransform4(double out[], double data[], int inv, int outOff, int off, int step);
@@ -36,7 +37,7 @@ void freeFloat64Array (double* addr) {
   return free(addr);
 }
 
-void transform4(double out[], double data[], int inv, unsigned int size, unsigned int width, unsigned int bitrev[], double table[]) {
+void transform4(double out[], double data[], int inv, int size, int width, int bitrev[], double table[]) {
   // Initial step (permute and transform)
   int step = 1 << width;
   int len = (size / step) << 1;
@@ -44,13 +45,69 @@ void transform4(double out[], double data[], int inv, unsigned int size, unsigne
   if (len == 4) {
     for (int outOff = 0, t = 0; outOff < size; outOff += len, t++) {
       int off = bitrev[t];
-      singleTransform2(out, data, outOff, off, step);
+      double evenR = data[off];
+      double evenI = data[off + 1];
+      double oddR = data[off + step];
+      double oddI = data[off + step + 1];
+
+      double leftR = evenR + oddR;
+      double leftI = evenI + oddI;
+      double rightR = evenR - oddR;
+      double rightI = evenI - oddI;
+
+      out[outOff] = leftR;
+      out[outOff + 1] = leftI;
+      out[outOff + 2] = rightR;
+      out[outOff + 3] = rightI;
     }
   } else {
     // len === 8
     for (int outOff = 0, t = 0; outOff < size; outOff += len, t++) {
       int off = bitrev[t];
-      singleTransform4(out, data, inv, outOff, off, step);
+      int step2 = step * 2;
+      int step3 = step * 3;
+
+      // Original values
+      double Ar = data[off];
+      double Ai = data[off + 1];
+      double Br = data[off + step];
+      double Bi = data[off + step + 1];
+      double Cr = data[off + step2];
+      double Ci = data[off + step2 + 1];
+      double Dr = data[off + step3];
+      double Di = data[off + step3 + 1];
+
+      // Pre-Final values
+      double T0r = Ar + Cr;
+      double T0i = Ai + Ci;
+      double T1r = Ar - Cr;
+      double T1i = Ai - Ci;
+      double T2r = Br + Dr;
+      double T2i = Bi + Di;
+      double T3r = inv * (Br - Dr);
+      double T3i = inv * (Bi - Di);
+
+      // Final values
+      double FAr = T0r + T2r;
+      double FAi = T0i + T2i;
+
+      double FBr = T1r + T3i;
+      double FBi = T1i - T3r;
+
+      double FCr = T0r - T2r;
+      double FCi = T0i - T2i;
+
+      double FDr = T1r - T3i;
+      double FDi = T1i + T3r;
+
+      out[outOff] = FAr;
+      out[outOff + 1] = FAi;
+      out[outOff + 2] = FBr;
+      out[outOff + 3] = FBi;
+      out[outOff + 4] = FCr;
+      out[outOff + 5] = FCi;
+      out[outOff + 6] = FDr;
+      out[outOff + 7] = FDi;
     }
   }
 
@@ -134,7 +191,9 @@ void transform4(double out[], double data[], int inv, unsigned int size, unsigne
   }
 };
 
-void singleTransform2(double out[], double data[], int outOff, int off, int step) {
+/*
+__attribute__((always_inline)) void singleTransform2(double out[], double data[], int outOff, int off, int step) {
+  int off = bitrev[t];
   double evenR = data[off];
   double evenI = data[off + 1];
   double oddR = data[off + step];
@@ -151,7 +210,7 @@ void singleTransform2(double out[], double data[], int outOff, int off, int step
   out[outOff + 3] = rightI;
 };
 
-void singleTransform4(double out[], double data[], int inv, int outOff, int off, int step) {
+__attribute__((always_inline)) void singleTransform4(double out[], double data[], int inv, int outOff, int off, int step) {
   int step2 = step * 2;
   int step3 = step * 3;
 
@@ -196,4 +255,4 @@ void singleTransform4(double out[], double data[], int inv, int outOff, int off,
   out[outOff + 5] = FCi;
   out[outOff + 6] = FDr;
   out[outOff + 7] = FDi;
-};
+};*/

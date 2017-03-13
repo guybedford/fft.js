@@ -4,6 +4,16 @@
 
 Implementation of Radix-4 FFT.
 
+This is a WASM implementation of the project by Fedor Indutny at https://github.com/indutny/fft.js.
+
+WASM execution uses the Node ES Module Loader project (https://github.com/ModuleLoader/node-es-module-loader).
+
+```
+npm install && npm run bench
+```
+
+Benchmark updated below to reflect WASM results.
+
 ## Usage
 
 ```js
@@ -39,6 +49,11 @@ f.transform(out, data);
 Inverse fourier transform:
 ```js
 f.inverseTransform(data, out);
+
+// necessary to free WASM memory as WeakRefs aren't a thing yet
+f.disposeBuffer(data);
+f.disposeBuffer(out);
+f.dispose();
 ```
 
 ## Benchmark
@@ -46,25 +61,29 @@ f.inverseTransform(data, out);
 ```
 $ npm run bench
 ===== table construction =====
-    fft.js x 1,426 ops/sec ±0.70% (93 runs sampled)
+    fft.js x 970 ops/sec ±0.90% (92 runs sampled)
+    fft.js wasm x 21.36 ops/sec ±58.13% (7 runs sampled)
   Fastest is fft.js
 ===== transform size=2048 =====
-    fft.js x 35,153 ops/sec ±0.83% (94 runs sampled)
-    jensnockert x 5,037 ops/sec ±0.98% (91 runs sampled)
-    dsp.js x 23,143 ops/sec ±0.64% (96 runs sampled)
-    drom x 14,372 ops/sec ±0.76% (92 runs sampled)
-  Fastest is fft.js
+    fft.js x 20,702 ops/sec ±4.43% (81 runs sampled)
+    fft.js wasm x 20,439 ops/sec ±0.57% (94 runs sampled)
+    jensnockert x 3,540 ops/sec ±1.21% (93 runs sampled)
+    dsp.js x 15,350 ops/sec ±0.62% (95 runs sampled)
+    drom x 10,117 ops/sec ±0.64% (93 runs sampled)
+  Fastest is fft.js wasm
 ===== transform size=4096 =====
-    fft.js x 15,676 ops/sec ±0.76% (94 runs sampled)
-    jensnockert x 3,864 ops/sec ±1.02% (93 runs sampled)
-    dsp.js x 7,905 ops/sec ±0.50% (97 runs sampled)
-    drom x 6,718 ops/sec ±0.78% (96 runs sampled)
-  Fastest is fft.js
+    fft.js x 9,172 ops/sec ±1.04% (93 runs sampled)
+    fft.js wasm x 10,079 ops/sec ±0.84% (95 runs sampled)
+    jensnockert x 2,485 ops/sec ±2.35% (84 runs sampled)
+    dsp.js x 3,437 ops/sec ±2.71% (79 runs sampled)
+    drom x 4,391 ops/sec ±1.79% (88 runs sampled)
+  Fastest is fft.js wasm
 ===== transform size=8192 =====
-    fft.js x 6,896 ops/sec ±0.79% (96 runs sampled)
-    jensnockert x 1,193 ops/sec ±0.73% (94 runs sampled)
-    dsp.js x 2,300 ops/sec ±0.74% (95 runs sampled)
-    drom x 3,164 ops/sec ±0.67% (95 runs sampled)
+    fft.js x 4,357 ops/sec ±0.85% (93 runs sampled)
+    fft.js wasm x 4,258 ops/sec ±0.73% (94 runs sampled)
+    jensnockert x 836 ops/sec ±1.29% (92 runs sampled)
+    dsp.js x 1,997 ops/sec ±0.67% (93 runs sampled)
+    drom x 2,148 ops/sec ±0.67% (91 runs sampled)
   Fastest is fft.js
 ===== transform size=16384 =====
     fft.js x 3,123 ops/sec ±0.84% (95 runs sampled)
@@ -88,6 +107,13 @@ $ npm run bench
     fft.js x 4,399 ops/sec ±0.82% (93 runs sampled)
     fourier-transform x 2,745 ops/sec ±0.68% (94 runs sampled)
   Fastest is fft.js
+=======
+    fft.js x 1,897 ops/sec ±0.26% (95 runs sampled)
+    fft.js wasm x 2,094 ops/sec ±0.60% (93 runs sampled)
+    jensnockert x 613 ops/sec ±0.89% (88 runs sampled)
+    dsp.js x 619 ops/sec ±0.51% (91 runs sampled)
+    drom x 905 ops/sec ±3.36% (83 runs sampled)
+  Fastest is fft.js wasm
 ```
 
 #### LICENSE
